@@ -1,0 +1,76 @@
+.program-list {
+    display: grid;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.program-card {
+    background: var(--card-background);
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.2s ease;
+}
+
+.program-card:hover {
+    transform: translateY(-2px);
+}
+
+.program-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.program-title {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text-color);
+}
+
+.program-meta {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.program-duration {
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.program-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .program-list {
+        gap: 16px;
+    }
+
+    .program-card {
+        padding: 16px;
+    }
+
+    .program-actions {
+        flex-direction: column;
+    }
+
+    .program-actions .button {
+        width: 100%;
+    }
+}
