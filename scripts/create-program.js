@@ -38,14 +38,14 @@ function createWeekElement(weekNumber) {
         </div>
         <div class='week-days'></div>
         <button type='button' class='button secondary' onclick='addDay(${weekNumber})'>
-            Add Day
+            Add Training Day
         </button>
     `;
     return weekDiv;
 }
 
 function addDay(weekNumber) {
-    const weekElement = document.querySelector(\`.program-week:nth-child(\${weekNumber})\`);
+    const weekElement = document.querySelector(`.program-week:nth-child(${weekNumber})`);
     const daysContainer = weekElement.querySelector('.week-days');
     const dayNumber = daysContainer.children.length + 1;
     
@@ -59,26 +59,42 @@ function createDayElement(weekNumber, dayNumber) {
     dayDiv.innerHTML = `
         <div class='day-header'>
             <h3>Day ${dayNumber}</h3>
-            <button type='button' class='button secondary remove-day' onclick='removeDay(this)'>-</button>
+            <button type='button' class='button secondary remove-day' onclick='removeDay(this)'>Remove Day</button>
         </div>
-        <form class='workout-form'>
+        <div class='workout-details'>
             <div class='form-group'>
-                <input type='text' class='workout-name' placeholder='Workout name'>
+                <input type='text' class='workout-name' placeholder='Workout Name (e.g., Full Body, Upper Body, etc.)'>
             </div>
-            <div id='workout-sections-w${weekNumber}d${dayNumber}' class='workout-sections'></div>
-            <div class='form-group'>
-                <button type='button' class='button secondary' onclick='addSection(${weekNumber}, ${dayNumber})'>
-                    Add Section
-                </button>
-            </div>
-        </form>
+            <div class='exercise-list' id='exercises-w${weekNumber}d${dayNumber}'></div>
+            <button type='button' class='button secondary' onclick='addExercise(${weekNumber}, ${dayNumber})'>
+                Add Exercise
+            </button>
+        </div>
     `;
     return dayDiv;
 }
 
 function removeDay(button) {
-    const dayElement = button.closest('.program-day');
-    dayElement.remove();
+    button.closest('.program-day').remove();
+}
+
+function addExercise(weekNumber, dayNumber) {
+    const exerciseList = document.getElementById(`exercises-w${weekNumber}d${dayNumber}`);
+    const exerciseDiv = document.createElement('div');
+    exerciseDiv.className = 'exercise-item';
+    exerciseDiv.innerHTML = `
+        <div class='form-group'>
+            <input type='text' placeholder='Exercise name' required>
+            <input type='text' placeholder='Sets x Reps' required>
+            <input type='text' placeholder='Notes (optional)'>
+            <button type='button' class='button secondary' onclick='removeExercise(this)'>Remove</button>
+        </div>
+    `;
+    exerciseList.appendChild(exerciseDiv);
+}
+
+function removeExercise(button) {
+    button.closest('.exercise-item').remove();
 }
 
 function saveProgram() {
@@ -111,9 +127,23 @@ function collectWeeksData() {
         const dayElements = weekElement.querySelectorAll('.program-day');
         
         dayElements.forEach((dayElement, dayIndex) => {
+            const workoutName = dayElement.querySelector('.workout-name').value;
+            const exercises = [];
+            
+            const exerciseItems = dayElement.querySelectorAll('.exercise-item');
+            exerciseItems.forEach(exerciseItem => {
+                const inputs = exerciseItem.querySelectorAll('input');
+                exercises.push({
+                    name: inputs[0].value,
+                    setsReps: inputs[1].value,
+                    notes: inputs[2].value
+                });
+            });
+
             days.push({
                 dayNumber: dayIndex + 1,
-                workout: collectWorkoutData(dayElement)
+                workoutName: workoutName,
+                exercises: exercises
             });
         });
 
@@ -124,68 +154,4 @@ function collectWeeksData() {
     });
 
     return weeks;
-}
-
-function collectWorkoutData(dayElement) {
-    const workoutName = dayElement.querySelector('.workout-name').value;
-    const sections = [];
-    const sectionElements = dayElement.querySelectorAll('.workout-section');
-
-    sectionElements.forEach((sectionElement) => {
-        const exercises = [];
-        const exerciseElements = sectionElement.querySelectorAll('.exercise-item');
-
-        exerciseElements.forEach((exerciseElement) => {
-            exercises.push({
-                name: exerciseElement.querySelector('.exercise-name').value,
-                rounds: parseInt(exerciseElement.querySelector('.exercise-rounds').value) || 0,
-                reps: parseInt(exerciseElement.querySelector('.exercise-reps').value) || 0,
-                notes: exerciseElement.querySelector('.exercise-notes').value
-            });
-        });
-
-        sections.push({
-            type: sectionElement.querySelector('.section-type').value,
-            exercises: exercises
-        });
-    });
-
-    return {
-        name: workoutName,
-        sections: sections
-    };
-}
-
-// Reuse workout creation functions
-function addSection(weekNumber, dayNumber) {
-    const sectionsContainer = document.getElementById(\`workout-sections-w\${weekNumber}d\${dayNumber}\`);
-    const sectionElement = createSectionElement();
-    sectionsContainer.appendChild(sectionElement);
-}
-
-function createSectionElement() {
-    const sectionTemplate = document.getElementById('section-template');
-    return document.importNode(sectionTemplate.content, true);
-}
-
-function addExercise(button) {
-    const sectionElement = button.closest('.workout-section');
-    const exercisesList = sectionElement.querySelector('.exercises-list');
-    const exerciseElement = createExerciseElement();
-    exercisesList.appendChild(exerciseElement);
-}
-
-function createExerciseElement() {
-    const exerciseTemplate = document.getElementById('exercise-template');
-    return document.importNode(exerciseTemplate.content, true);
-}
-
-function removeExercise(button) {
-    const exerciseItem = button.closest('.exercise-item');
-    exerciseItem.remove();
-}
-
-function removeSection(button) {
-    const sectionElement = button.closest('.workout-section');
-    sectionElement.remove();
 }
