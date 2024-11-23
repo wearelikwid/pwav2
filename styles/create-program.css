@@ -36,7 +36,7 @@
 
 /* Duration input specific styling */
 .form-group input[type="number"] {
-    width: 120px; /* Made smaller for better visual */
+    width: 120px;
 }
 
 /* Program weeks container */
@@ -57,7 +57,7 @@
 .week-header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     margin-bottom: 24px;
 }
 
@@ -84,9 +84,36 @@
 
 .day-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 16px;
+}
+
+/* Workout details section */
+.workout-details {
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+/* Exercise items */
+.exercise-item {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.exercise-item .form-group {
+    display: grid;
+    grid-template-columns: 2fr 1fr 2fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.exercise-list {
+    margin: 15px 0;
 }
 
 /* Button styling */
@@ -149,5 +176,9 @@
 
     .button {
         width: 100%;
+    }
+
+    .exercise-item .form-group {
+        grid-template-columns: 1fr;
     }
 }
