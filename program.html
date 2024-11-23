@@ -4,51 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#242424">
-    <meta name="description" content="16-Week Workout Program - Track your fitness journey">
+    <meta name="description" content="El Forma - Programs">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Workout App">
-    <title>16-Week Workout Program</title>
-    
-    <!-- Manifest -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/png" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
-    <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512x512.png">
-    
+    <meta name="apple-mobile-web-app-title" content="El Forma">
+    <title>El Forma - Programs</title>
+
     <!-- Styles -->
-    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/programs.css">
 </head>
 <body>
     <div class="container">
-        <div class="app-header">
-            <h1>16-Week Workout Program</h1>
-            <button id="install-button" class="install-button" style="display: none;">
-                Install App
-            </button>
-        </div>
-        <div id="weeks-container">
-            <!-- Week sections will be generated dynamically -->
-        </div>
+        <header class="app-header">
+            <a href="index.html" class="back-button">←</a>
+            <h1>Programs</h1>
+            <a href="create-program.html" class="button primary">Create Program</a>
+        </header>
+
+        <main>
+            <div id="programs-list" class="programs-list">
+                <!-- Programs will be loaded here dynamically -->
+            </div>
+        </main>
     </div>
-    <script src="scripts/index.js"></script>
-    <script src="scripts/pwa.js"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then(registration => {
-                        console.log('ServiceWorker registration successful');
-                    })
-                    .catch(err => {
-                        console.log('ServiceWorker registration failed: ', err);
-                    });
-            });
-        }
-    </script>
+
+    <script src="scripts/programs.js"></script>
 </body>
 </html>
