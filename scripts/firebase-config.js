@@ -15,19 +15,14 @@ const analytics = firebase.analytics();
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Enable persistence
-db.enablePersistence()
-  .catch((err) => {
-    if (err.code == 'failed-precondition') {
-      // Multiple tabs open, persistence can only be enabled in one tab at a time
-      console.log('Multiple tabs open, persistence can only be enabled in one tab at a time');
-    } else if (err.code == 'unimplemented') {
-      // The current browser doesn't support persistence
-      console.log('The current browser doesn\'t support persistence');
+// Use new cache setting instead of enablePersistence
+db.settings({
+    cache: {
+        synchronizeTabs: true
     }
-  });
+});
 
-// Export the Firebase services for use in other files
+// Export the Firebase services
 window.db = db;
 window.auth = auth;
 window.app = app;
