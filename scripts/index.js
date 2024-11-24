@@ -10,25 +10,27 @@ document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             // User is signed in
-            userSignedIn.style.display = 'flex';
-            userSignedOut.style.display = 'none';
-            userPhoto.src = user.photoURL || 'icons/default-profile.png';
-            userName.textContent = user.displayName;
+            if (userSignedIn) userSignedIn.style.display = 'flex';
+            if (userSignedOut) userSignedOut.style.display = 'none';
+            if (userPhoto) userPhoto.src = user.photoURL || 'icons/default-profile.png';
+            if (userName) userName.textContent = user.displayName;
 
             // Add sign out handler
-            signOutButton.addEventListener('click', async () => {
-                try {
-                    await firebase.auth().signOut();
-                    localStorage.removeItem('user');
-                    window.location.href = 'auth.html';
-                } catch (error) {
-                    console.error('Sign out error:', error);
-                }
-            });
+            if (signOutButton) {
+                signOutButton.addEventListener('click', async () => {
+                    try {
+                        await firebase.auth().signOut();
+                        localStorage.removeItem('user');
+                        window.location.href = 'auth.html';
+                    } catch (error) {
+                        console.error('Sign out error:', error);
+                    }
+                });
+            }
         } else {
             // User is signed out
-            userSignedIn.style.display = 'none';
-            userSignedOut.style.display = 'block';
+            if (userSignedIn) userSignedIn.style.display = 'none';
+            if (userSignedOut) userSignedOut.style.display = 'block';
         }
     });
 });
