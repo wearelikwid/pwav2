@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const userPhotoImg = document.getElementById('userPhoto');
     const userNameP = document.getElementById('userName');
     const userEmailP = document.getElementById('userEmail');
-    const signOutButton = document.getElementById('signOut');
+    const signOutButton = document.getElementById('signOut');  // For auth.html
+    const mainSignOutButton = document.getElementById('signOutButton');  // For index.html
 
     // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     photoURL: result.user.photoURL
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
-                window.location.href = 'index.html'; // Redirect after successful sign in
+                window.location.href = 'index.html';
             }
         } catch (error) {
             console.error("Error during sign in:", error);
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             await firebase.auth().signOut();
             localStorage.removeItem('user');
-            window.location.href = 'index.html';
+            window.location.href = 'index.html';  // Force redirect to index.html
         } catch (error) {
             console.error('Sign out error:', error);
         }
@@ -48,8 +49,12 @@ document.addEventListener('DOMContentLoaded', function() {
         googleSignInButton.addEventListener('click', signInWithGoogle);
     }
 
+    // Handle both sign out buttons
     if (signOutButton) {
         signOutButton.addEventListener('click', handleSignOut);
+    }
+    if (mainSignOutButton) {
+        mainSignOutButton.addEventListener('click', handleSignOut);
     }
 
     // Auth state changes
