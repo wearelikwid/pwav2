@@ -7,13 +7,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
 
-    // Get DOM elements - index page elements
-    const mainSignOutButton = document.getElementById('signOutButton');
+    // Get DOM elements - landing page elements
+    const authStatus = document.getElementById('authStatus');
     const userSignedInDiv = document.getElementById('userSignedIn');
     const userSignedOutDiv = document.getElementById('userSignedOut');
-    const indexUserPhoto = document.getElementById('userPhoto');
-    const indexUserName = document.getElementById('userName');
-    const authButton = document.getElementById('authButton');
+    const mainSignOutButton = document.getElementById('signOutButton');
 
     // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -37,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 
+                // Only redirect if we're on the auth page
                 if (isAuthPage) {
                     window.location.replace('index.html');
                 }
@@ -77,6 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (user) {
             // User is signed in
             if (isAuthPage && userDetailsDiv) {
+                // Auth page updates
                 userDetailsDiv.style.display = 'block';
                 if (userPhotoImg) userPhotoImg.src = user.photoURL || '';
                 if (userNameP) userNameP.textContent = user.displayName || '';
@@ -84,15 +84,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (isIndexPage) {
+                // Landing page updates
                 if (userSignedInDiv) userSignedInDiv.style.display = 'block';
                 if (userSignedOutDiv) userSignedOutDiv.style.display = 'none';
+                const indexUserPhoto = userSignedInDiv?.querySelector('#userPhoto');
+                const indexUserName = userSignedInDiv?.querySelector('#userName');
                 if (indexUserPhoto) indexUserPhoto.src = user.photoURL || '';
                 if (indexUserName) indexUserName.textContent = user.displayName || '';
             }
         } else {
             // User is signed out
-            if (isAuthPage) {
-                if (userDetailsDiv) userDetailsDiv.style.display = 'none';
+            if (isAuthPage && userDetailsDiv) {
+                userDetailsDiv.style.display = 'none';
             }
             
             if (isIndexPage) {
