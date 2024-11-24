@@ -23,6 +23,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const isAuthPage = window.location.pathname.includes('auth.html');
     const isIndexPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
 
+    // Redirect to index if needed
+    function redirectToIndex() {
+        if (!isIndexPage) {
+            window.location.replace('index.html');
+        }
+    }
+
     // Google Sign In
     async function signInWithGoogle() {
         try {
@@ -52,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             localStorage.clear();
             await firebase.auth().signOut();
-            window.location.replace('index.html');
+            redirectToIndex(); // Use the redirect function
         } catch (error) {
             console.error('Sign out error:', error);
-            window.location.replace('index.html');
+            redirectToIndex(); // Redirect even if there's an error
         }
     }
 
@@ -93,8 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             // User is signed out
-            if (isAuthPage && userDetailsDiv) {
-                userDetailsDiv.style.display = 'none';
+            if (isAuthPage) {
+                if (userDetailsDiv) userDetailsDiv.style.display = 'none';
+                redirectToIndex(); // Always redirect to index when signed out on auth page
             }
             
             if (isIndexPage) {
