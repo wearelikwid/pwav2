@@ -15,12 +15,29 @@ const analytics = firebase.analytics();
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Use new cache setting instead of enablePersistence
-db.settings({
-    cache: {
-        synchronizeTabs: true
+// Configure Firestore for offline persistence
+db.enablePersistence()
+  .then(() => {
+    // Offline persistence enabled successfully
+    console.log("Offline persistence enabled");
+  })
+  .catch((err) => {
+    if (err.code === 'failed-precondition') {
+      console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
+    } else if (err.code === 'unimplemented') {
+      console.log('The current browser doesn\'t support persistence');
     }
-});
+  });
+
+// Configure Auth persistence
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    // Auth persistence set successfully
+    console.log("Auth persistence set to LOCAL");
+  })
+  .catch((error) => {
+    console.error("Auth persistence error:", error);
+  });
 
 // Export the Firebase services
 window.db = db;
