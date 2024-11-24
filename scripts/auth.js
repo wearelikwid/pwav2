@@ -3,8 +3,11 @@ const auth = firebase.auth();
 
 // UI Elements
 const googleButton = document.getElementById('googleSignIn');
-console.log('Found Google button:', googleButton); // Debug log
-
+const signOutButton = document.getElementById('signOut');
+const userDetails = document.getElementById('userDetails');
+const userPhoto = document.getElementById('userPhoto');
+const userName = document.getElementById('userName');
+const userEmail = document.getElementById('userEmail');
 // Google Sign In
 googleButton.addEventListener('click', async function() {
     console.log('Google button clicked'); // Debug log
@@ -12,10 +15,6 @@ googleButton.addEventListener('click', async function() {
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
         console.log('Created provider'); // Debug log
-        
-        // Enable persistence first
-        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        console.log('Set persistence'); // Debug log
         
         const result = await auth.signInWithPopup(provider);
         console.log('Sign in successful:', result.user.email); // Debug log
