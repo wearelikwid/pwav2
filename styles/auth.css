@@ -1,0 +1,43 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+}
+
+.auth-box {
+    background-color: #1a1a1a;
+    padding: 2rem;
+    border-radius: 16px;
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin: 1rem 0;
+    padding: 12px;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.google-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+.user-details {
+    margin-top: 20px;
+}
+
+.user-photo {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
