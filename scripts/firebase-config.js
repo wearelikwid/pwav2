@@ -15,29 +15,31 @@ const analytics = firebase.analytics();
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Configure Firestore for offline persistence
-db.enablePersistence()
-  .then(() => {
-    // Offline persistence enabled successfully
-    console.log("Offline persistence enabled");
-  })
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.log('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code === 'unimplemented') {
-      console.log('The current browser doesn\'t support persistence');
-    }
-  });
+// Configure Firestore settings for better offline support and multi-tab sync
+db.enablePersistence({
+  synchronizeTabs: true
+}).catch((err) => {
+  if (err.code == 'failed-precondition') {
+    console.warn('Multiple tabs open, persistence enabled in first tab only');
+  } else if (err.code == 'unimplemented') {
+    console.warn('Browser doesn\'t support persistence');
+  }
+});
 
 // Configure Auth persistence
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .then(() => {
-    // Auth persistence set successfully
-    console.log("Auth persistence set to LOCAL");
-  })
   .catch((error) => {
     console.error("Auth persistence error:", error);
   });
+
+// Listen for auth state changes
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    console.log('User is signed in:', user.email);
+  } else {
+    console.log('User is signed out');
+  }
+});
 
 // Export the Firebase services
 window.db = db;
