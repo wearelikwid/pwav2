@@ -1,58 +1,53 @@
-// Wait for DOM to load
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is already logged in
-    const user = localStorage.getItem('user');
-    if (user && window.location.pathname.endsWith('auth.html')) {
-        window.location.href = 'index.html';
-        return;
-    }
+// Initialize Firebase Auth
+const auth = firebase.auth();
 
-    // Get DOM elements
-    const googleSignInButton = document.getElementById('googleSignIn');
-    const userDetailsDiv = document.getElementById('userDetails');
-    const userPhotoImg = document.getElementById('userPhoto');
-    const userNameP = document.getElementById('userName');
-    const userEmailP = document.getElementById('userEmail');
-    const signOutButton = document.getElementById('signOut');
+// UI Elements
+const googleButton = document.getElementById('googleSignIn');
+const signOutButton = document.getElementById('signOut');
+const userDetails = document.getElementById('userDetails');
+const userPhoto = document.getElementById('userPhoto');
+const userName = document.getElementById('userName');
+const userEmail = document.getElementById('userEmail');
 
-    // Google Sign In
-    async function signInWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({
-            prompt: 'select_account'
+// Google Sign In
+googleButton.addEventListener('click', function() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+        .catch(error => {
+            console.error('Error signing in:', error);
+            alert('Sign in failed. Please try again.');
         });
-        
-        try {
-            console.log('Starting Google sign in process...');
-            
-            // Enable persistence
-            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-            
-            const result = await firebase.auth().signInWithPopup(provider);
-            console.log('Sign in successful:', result.user.email);
-            
-            // Store user data in localStorage
-            const userData = {
-                uid: result.user.uid,
-                email: result.user.email,
-                displayName: result.user.displayName,
-                photoURL: result.user.photoURL
-            };
-            
-            localStorage.setItem('user', JSON.stringify(userData));
-            console.log('User data stored:', userData);
-            
-            // Redirect to home page
-            window.location.href = 'index.html';
-            
-        } catch (error) {
-            console.error('Sign in error:', error);
-            alert('Sign in error: ' + error.message);
-        }
-    }
+});
 
-    // Sign Out
-    async function signOut() {
-        try {
-            await firebase.auth().signOut();
-            localStorage.removeItem('user');
+// Sign Out
+signOutButton.addEventListener('click', function() {
+    auth.signOut()
+        .catch(error => {
+            console.error('Error signing out:', error);
+            alert('Sign out failed. Please try again.');
+        });
+});
+
+// Auth State Observer
+auth.onAuthStateChanged(function(user) {
+    if (user) {
+        // User is signed in
+        googleButton.style.display = 'none';
+        userDetails.style.display = 'block';
+        userPhoto.src = user.photoURL;
+        userName.textContent = user.displayName;
+        userEmail.textContent = user.email;
+        
+        // Redirect to index.html after small delay
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 1000);
+    } else {
+        // User is signed out
+        googleButton.style.display = 'block';
+        userDetails.style.display = 'none';
+        userPhoto.src = '';
+        userName.textContent = '';
+        userEmail.textContent = '';
+    }
+});
