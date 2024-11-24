@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const userPhotoImg = document.getElementById('userPhoto');
     const userNameP = document.getElementById('userName');
     const userEmailP = document.getElementById('userEmail');
-    const signOutButton = document.getElementById('signOut');  // For auth.html
-    const mainSignOutButton = document.getElementById('signOutButton');  // For index.html
+    const signOutButton = document.getElementById('signOut');
+    const mainSignOutButton = document.getElementById('signOutButton');
 
     // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     photoURL: result.user.photoURL
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
-                window.location.href = 'index.html';
+                window.location.replace('index.html');
             }
         } catch (error) {
             console.error("Error during sign in:", error);
@@ -36,11 +36,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sign Out
     async function handleSignOut() {
         try {
+            // First, clear local storage
+            localStorage.clear();
+            
+            // Then sign out from Firebase
             await firebase.auth().signOut();
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';  // Force redirect to index.html
+            
+            // Force a clean redirect to index.html
+            console.log('Signing out, redirecting to index.html');
+            setTimeout(() => {
+                window.location.replace('/index.html');
+            }, 100);
         } catch (error) {
             console.error('Sign out error:', error);
+            // Force redirect even if there's an error
+            window.location.replace('/index.html');
         }
     }
 
@@ -63,14 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // User is signed in
             if (userDetailsDiv) {
                 userDetailsDiv.style.display = 'block';
-                if (userPhotoImg) userPhotoImg.src = user.photoURL;
-                if (userNameP) userNameP.textContent = user.displayName;
-                if (userEmailP) userEmailP.textContent = user.email;
+                if (userPhotoImg) userPhotoImg.src = user.photoURL || '';
+                if (userNameP) userNameP.textContent = user.displayName || '';
+                if (userEmailP) userEmailP.textContent = user.email || '';
             }
         } else {
             // User is signed out
             if (userDetailsDiv) {
                 userDetailsDiv.style.display = 'none';
+            }
+            // If we're not on the index page, redirect
+            if (!window.location.pathname.includes('index.html')) {
+                window.location.replace('/index.html');
             }
         }
     });
