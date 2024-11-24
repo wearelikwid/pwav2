@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         await firebase.auth().signOut();
                         localStorage.removeItem('user');
-                        window.location.href = 'auth.html';
+                        window.location.replace('index.html');
                     } catch (error) {
                         console.error('Sign out error:', error);
                     }
