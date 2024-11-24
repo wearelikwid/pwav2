@@ -1,17 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Get DOM elements
+    // Get DOM elements - auth page elements
     const googleSignInButton = document.getElementById('googleSignIn');
     const userDetailsDiv = document.getElementById('userDetails');
     const userPhotoImg = document.getElementById('userPhoto');
     const userNameP = document.getElementById('userName');
     const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
+
+    // Get DOM elements - index page elements
     const mainSignOutButton = document.getElementById('signOutButton');
+    const userSignedInDiv = document.getElementById('userSignedIn');
+    const userSignedOutDiv = document.getElementById('userSignedOut');
+    const indexUserPhoto = document.getElementById('userPhoto');
+    const indexUserName = document.getElementById('userName');
 
     // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
+
+    // Check which page we're on
+    const isAuthPage = window.location.pathname.includes('auth.html');
+    const isIndexPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
 
     // Google Sign In
     async function signInWithGoogle() {
@@ -25,7 +35,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     photoURL: result.user.photoURL
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
-                window.location.replace('index.html');
+                
+                // Only redirect if we're on the auth page
+                if (isAuthPage) {
+                    window.location.replace('index.html');
+                }
             }
         } catch (error) {
             console.error("Error during sign in:", error);
@@ -36,20 +50,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sign Out
     async function handleSignOut() {
         try {
-            // First, clear local storage
             localStorage.clear();
-            
-            // Then sign out from Firebase
             await firebase.auth().signOut();
-            
-            // Force a clean redirect to index.html
-            console.log('Signing out, redirecting to index.html');
-            setTimeout(() => {
-                window.location.replace('index.html');
-            }, 100);
+            window.location.replace('index.html');
         } catch (error) {
             console.error('Sign out error:', error);
-            // Force redirect even if there's an error
             window.location.replace('index.html');
         }
     }
@@ -59,10 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
         googleSignInButton.addEventListener('click', signInWithGoogle);
     }
 
-    // Handle both sign out buttons
     if (signOutButton) {
         signOutButton.addEventListener('click', handleSignOut);
     }
+
     if (mainSignOutButton) {
         mainSignOutButton.addEventListener('click', handleSignOut);
     }
@@ -71,20 +76,30 @@ document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             // User is signed in
-            if (userDetailsDiv) {
+            if (isAuthPage && userDetailsDiv) {
+                // Auth page updates
                 userDetailsDiv.style.display = 'block';
                 if (userPhotoImg) userPhotoImg.src = user.photoURL || '';
                 if (userNameP) userNameP.textContent = user.displayName || '';
                 if (userEmailP) userEmailP.textContent = user.email || '';
             }
+            
+            if (isIndexPage) {
+                // Index page updates
+                if (userSignedInDiv) userSignedInDiv.style.display = 'block';
+                if (userSignedOutDiv) userSignedOutDiv.style.display = 'none';
+                if (indexUserPhoto) indexUserPhoto.src = user.photoURL || '';
+                if (indexUserName) indexUserName.textContent = user.displayName || '';
+            }
         } else {
             // User is signed out
-            if (userDetailsDiv) {
+            if (isAuthPage && userDetailsDiv) {
                 userDetailsDiv.style.display = 'none';
             }
-            // If we're not on the index page, redirect
-            if (!window.location.pathname.includes('index.html')) {
-                window.location.replace('index.html');
+            
+            if (isIndexPage) {
+                if (userSignedInDiv) userSignedInDiv.style.display = 'none';
+                if (userSignedOutDiv) userSignedOutDiv.style.display = 'block';
             }
         }
     });
