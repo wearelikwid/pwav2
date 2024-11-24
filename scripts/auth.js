@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
 
-    // Initialize the FirebaseUI Widget using Firebase
+    // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('profile');
     provider.addScope('email');
@@ -15,23 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Google Sign In
     async function signInWithGoogle() {
         try {
-            // Set persistence to LOCAL - user will stay signed in after page refresh
-            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-            
-            // Sign in with redirect (recommended for mobile)
-            await firebase.auth().signInWithRedirect(provider);
-        } catch (error) {
-            console.error("Error during sign in:", error);
-            alert("Error signing in: " + error.message);
-        }
-    }
-
-    // Handle redirect result
-    firebase.auth()
-        .getRedirectResult()
-        .then((result) => {
+            const result = await firebase.auth().signInWithPopup(provider);
             if (result.user) {
-                // User successfully signed in
                 const userData = {
                     uid: result.user.uid,
                     email: result.user.email,
@@ -39,24 +24,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     photoURL: result.user.photoURL
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
-                window.location.href = 'index.html';
+                window.location.href = 'index.html'; // Redirect after successful sign in
             }
-        })
-        .catch((error) => {
-            console.error("Error getting redirect result:", error);
-        });
+        } catch (error) {
+            console.error("Error during sign in:", error);
+            alert("Error signing in: " + error.message);
+        }
+    }
 
     // Sign Out
-    const handleSignOut = async () => {
+    async function handleSignOut() {
         try {
             await firebase.auth().signOut();
             localStorage.removeItem('user');
-            localStorage.removeItem('workoutProgress');
             window.location.href = 'index.html';
         } catch (error) {
             console.error('Sign out error:', error);
         }
-    };
+    }
 
     // Event Listeners
     if (googleSignInButton) {
@@ -77,22 +62,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (userNameP) userNameP.textContent = user.displayName;
                 if (userEmailP) userEmailP.textContent = user.email;
             }
-
-            // If on auth page, redirect to index
-            if (window.location.pathname.endsWith('auth.html')) {
-                window.location.href = 'index.html';
-            }
         } else {
             // User is signed out
             if (userDetailsDiv) {
                 userDetailsDiv.style.display = 'none';
-            }
-
-            // Only redirect to auth for protected pages
-            const protectedPages = ['workouts.html', 'create-workout.html', 'programs.html'];
-            const currentPage = window.location.pathname.split('/').pop();
-            if (protectedPages.includes(currentPage)) {
-                window.location.href = 'auth.html';
             }
         }
     });
