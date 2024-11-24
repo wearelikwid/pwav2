@@ -73,7 +73,7 @@ body {
 }
 
 #userSignedOut {
-    display: none;
+    display: block;
 }
 
 .app-header h1 {
