@@ -1,63 +1,68 @@
-// Initialize Firebase Auth
-const auth = firebase.auth();
+// Wait for DOM to load
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
+    const user = localStorage.getItem('user');
+    if (user && window.location.pathname.endsWith('auth.html')) {
+        window.location.href = 'index.html';
+        return;
+    }
 
-// UI Elements
-const googleButton = document.getElementById('googleSignIn');
-const signOutButton = document.getElementById('signOut');
-const userDetails = document.getElementById('userDetails');
-const userPhoto = document.getElementById('userPhoto');
-const userName = document.getElementById('userName');
-const userEmail = document.getElementById('userEmail');
-// Google Sign In
-googleButton.addEventListener('click', async function() {
-    console.log('Google button clicked'); // Debug log
-    
-    try {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        console.log('Created provider'); // Debug log
+    // UI Elements
+    const googleButton = document.getElementById('googleSignIn');
+    const signOutButton = document.getElementById('signOut');
+    const userDetails = document.getElementById('userDetails');
+    const userPhoto = document.getElementById('userPhoto');
+    const userName = document.getElementById('userName');
+    const userEmail = document.getElementById('userEmail');
+
+    // Google Sign In
+    googleButton.addEventListener('click', async function() {
+        console.log('Google button clicked');
         
-        const result = await auth.signInWithPopup(provider);
-        console.log('Sign in successful:', result.user.email); // Debug log
-    } catch (error) {
-        console.error('Detailed sign in error:', error); // More detailed error
-        alert('Sign in failed: ' + error.message);
-    }
-});
-
-// Sign Out
-signOutButton.addEventListener('click', async function() {
-    console.log('Sign out clicked'); // Debug log
-    try {
-        await auth.signOut();
-        console.log('Sign out successful'); // Debug log
-    } catch (error) {
-        console.error('Sign out error:', error);
-        alert('Sign out failed. Please try again.');
-    }
-});
-
-// Auth State Observer
-auth.onAuthStateChanged(function(user) {
-    console.log('Auth state changed. User:', user ? 'logged in' : 'logged out'); // Debug log
-    
-    if (user) {
-        // User is signed in
-        googleButton.style.display = 'none';
-        userDetails.style.display = 'block';
-        userPhoto.src = user.photoURL;
-        userName.textContent = user.displayName;
-        userEmail.textContent = user.email;
-
-        console.log('Redirecting to index.html...'); // Debug log
-        setTimeout(() => {
+        try {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            const result = await auth.signInWithPopup(provider);
+            
+            // Store user data
+            const userData = {
+                uid: result.user.uid,
+                email: result.user.email,
+                displayName: result.user.displayName,
+                photoURL: result.user.photoURL
+            };
+            localStorage.setItem('user', JSON.stringify(userData));
+            
+            // Redirect to home
             window.location.href = 'index.html';
-        }, 1000);
-    } else {
-        // User is signed out
-        googleButton.style.display = 'block';
-        userDetails.style.display = 'none';
-        userPhoto.src = '';
-        userName.textContent = '';
-        userEmail.textContent = '';
-    }
+        } catch (error) {
+            console.error('Sign in error:', error);
+            alert('Sign in failed: ' + error.message);
+        }
+    });
+
+    // Sign Out Handler
+    signOutButton?.addEventListener('click', async function() {
+        try {
+            await auth.signOut();
+            localStorage.removeItem('user');
+            window.location.href = 'auth.html';
+        } catch (error) {
+            console.error('Sign out error:', error);
+            alert('Sign out failed: ' + error.message);
+        }
+    });
+
+    // Auth State Observer
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            if (googleButton) googleButton.style.display = 'none';
+            if (userDetails) userDetails.style.display = 'block';
+            if (userPhoto) userPhoto.src = user.photoURL || '';
+            if (userName) userName.textContent = user.displayName;
+            if (userEmail) userEmail.textContent = user.email;
+        } else {
+            if (googleButton) googleButton.style.display = 'block';
+            if (userDetails) userDetails.style.display = 'none';
+        }
+    });
 });
