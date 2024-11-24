@@ -1,13 +1,26 @@
-.program-list {
-    display: grid;
-    gap: 20px;
-    padding: 20px 0;
+/* Main container */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
+/* Programs list */
+.programs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+/* Program card */
 .program-card {
     background: var(--card-background);
     border-radius: 12px;
     padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     transition: transform 0.2s ease;
 }
 
@@ -15,62 +28,60 @@
     transform: translateY(-2px);
 }
 
-.program-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.program-title {
-    margin: 0;
+/* Program information */
+.program-info h2 {
+    margin: 0 0 8px 0;
     font-size: 1.2rem;
     color: var(--text-color);
 }
 
-.program-meta {
-    font-size: 0.9rem;
+.program-info p {
+    margin: 0;
     color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
-.program-duration {
-    display: inline-block;
-    padding: 4px 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    margin-top: 8px;
-}
-
+/* Program actions */
 .program-actions {
     display: flex;
     gap: 8px;
-    margin-top: 16px;
 }
 
-.empty-state {
+.program-actions .button {
+    padding: 8px 16px;
+}
+
+/* No programs message */
+.no-programs {
     text-align: center;
-    padding: 40px 20px;
-}
-
-.empty-state p {
-    margin-bottom: 20px;
     color: var(--text-secondary);
+    margin: 32px 0;
 }
 
-@media (max-width: 768px) {
-    .program-list {
-        gap: 16px;
-    }
+/* Actions container */
+.actions {
+    text-align: center;
+    margin-top: 24px;
+}
 
-    .program-card {
+/* Responsive design */
+@media (max-width: 768px) {
+    .container {
         padding: 16px;
     }
 
-    .program-actions {
+    .program-card {
         flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .program-actions {
+        width: 100%;
+        justify-content: center;
     }
 
     .program-actions .button {
-        width: 100%;
+        flex: 1;
     }
 }
