@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const userSignedOutDiv = document.getElementById('userSignedOut');
     const indexUserPhoto = document.getElementById('userPhoto');
     const indexUserName = document.getElementById('userName');
+    const authButton = document.getElementById('authButton');
 
     // Initialize Google provider
     const provider = new firebase.auth.GoogleAuthProvider();
@@ -22,13 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Check which page we're on
     const isAuthPage = window.location.pathname.includes('auth.html');
     const isIndexPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
-
-    // Redirect to index if needed
-    function redirectToIndex() {
-        if (!isIndexPage) {
-            window.location.replace('index.html');
-        }
-    }
 
     // Google Sign In
     async function signInWithGoogle() {
@@ -43,7 +37,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 
-                // Only redirect if we're on the auth page
                 if (isAuthPage) {
                     window.location.replace('index.html');
                 }
@@ -59,10 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             localStorage.clear();
             await firebase.auth().signOut();
-            redirectToIndex(); // Use the redirect function
+            window.location.replace('index.html');
         } catch (error) {
             console.error('Sign out error:', error);
-            redirectToIndex(); // Redirect even if there's an error
+            window.location.replace('index.html');
         }
     }
 
@@ -84,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (user) {
             // User is signed in
             if (isAuthPage && userDetailsDiv) {
-                // Auth page updates
                 userDetailsDiv.style.display = 'block';
                 if (userPhotoImg) userPhotoImg.src = user.photoURL || '';
                 if (userNameP) userNameP.textContent = user.displayName || '';
@@ -92,7 +84,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (isIndexPage) {
-                // Index page updates
                 if (userSignedInDiv) userSignedInDiv.style.display = 'block';
                 if (userSignedOutDiv) userSignedOutDiv.style.display = 'none';
                 if (indexUserPhoto) indexUserPhoto.src = user.photoURL || '';
@@ -102,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // User is signed out
             if (isAuthPage) {
                 if (userDetailsDiv) userDetailsDiv.style.display = 'none';
-                redirectToIndex(); // Always redirect to index when signed out on auth page
             }
             
             if (isIndexPage) {
