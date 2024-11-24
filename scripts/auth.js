@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
             firebase.auth().signOut()
                 .then(() => {
                     localStorage.removeItem('user');
-                    window.location.href = 'auth.html';
+                    window.location.href = 'index.html';
                 })
                 .catch((error) => {
                     console.error('Error during sign out:', error);
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userPhotoImg) userPhotoImg.src = user.photoURL;
             if (userNameP) userNameP.textContent = user.displayName;
 
-            // Redirect if on auth page
+            // Only redirect if on auth page
             if (isAuthPage) {
                 window.location.href = 'index.html';
             }
@@ -58,8 +58,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userSignedInDiv) userSignedInDiv.style.display = 'none';
             if (userSignedOutDiv) userSignedOutDiv.style.display = 'flex';
             
-            // Redirect to auth page if trying to access protected pages
-            if (!isAuthPage && !window.location.pathname.endsWith('index.html')) {
+            // Don't redirect to auth page unless trying to access protected pages
+            // Add your protected page paths here
+            const protectedPages = ['workouts.html', 'create-workout.html', 'programs.html'];
+            const currentPage = window.location.pathname.split('/').pop();
+            if (protectedPages.includes(currentPage)) {
                 window.location.href = 'auth.html';
             }
         }
