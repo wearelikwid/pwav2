@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const isAuthPage = window.location.pathname.includes('auth.html');
     const isIndexPage = window.location.pathname.includes('index.html') || window.location.pathname === '/';
 
+    // Set initial display states for landing page
+    if (isIndexPage) {
+        if (userSignedInDiv) userSignedInDiv.style.display = 'none';
+        if (userSignedOutDiv) userSignedOutDiv.style.display = 'block';
+    }
+
     // Google Sign In
     async function signInWithGoogle() {
         try {
@@ -73,10 +79,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Auth state changes
     firebase.auth().onAuthStateChanged((user) => {
+        console.log('Auth state changed:', user ? 'signed in' : 'signed out');
+        
         if (user) {
             // User is signed in
             if (isAuthPage && userDetailsDiv) {
-                // Auth page updates
                 userDetailsDiv.style.display = 'block';
                 if (userPhotoImg) userPhotoImg.src = user.photoURL || '';
                 if (userNameP) userNameP.textContent = user.displayName || '';
@@ -84,13 +91,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (isIndexPage) {
-                // Landing page updates
-                if (userSignedInDiv) userSignedInDiv.style.display = 'block';
+                console.log('Updating landing page - user signed in');
+                if (userSignedInDiv) {
+                    userSignedInDiv.style.display = 'block';
+                    const indexUserPhoto = userSignedInDiv.querySelector('#userPhoto');
+                    const indexUserName = userSignedInDiv.querySelector('#userName');
+                    if (indexUserPhoto) indexUserPhoto.src = user.photoURL || '';
+                    if (indexUserName) indexUserName.textContent = user.displayName || '';
+                }
                 if (userSignedOutDiv) userSignedOutDiv.style.display = 'none';
-                const indexUserPhoto = userSignedInDiv?.querySelector('#userPhoto');
-                const indexUserName = userSignedInDiv?.querySelector('#userName');
-                if (indexUserPhoto) indexUserPhoto.src = user.photoURL || '';
-                if (indexUserName) indexUserName.textContent = user.displayName || '';
             }
         } else {
             // User is signed out
@@ -99,6 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (isIndexPage) {
+                console.log('Updating landing page - user signed out');
                 if (userSignedInDiv) userSignedInDiv.style.display = 'none';
                 if (userSignedOutDiv) userSignedOutDiv.style.display = 'block';
             }
