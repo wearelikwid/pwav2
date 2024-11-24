@@ -7,62 +7,54 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // UI Elements
-    const googleButton = document.getElementById('googleSignIn');
+    // Get DOM elements
+    const googleSignInButton = document.getElementById('googleSignIn');
+    const userDetailsDiv = document.getElementById('userDetails');
+    const userPhotoImg = document.getElementById('userPhoto');
+    const userNameP = document.getElementById('userName');
+    const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
-    const userDetails = document.getElementById('userDetails');
-    const userPhoto = document.getElementById('userPhoto');
-    const userName = document.getElementById('userName');
-    const userEmail = document.getElementById('userEmail');
 
     // Google Sign In
-    googleButton.addEventListener('click', async function() {
-        console.log('Google button clicked');
-        
-        try {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            const result = await auth.signInWithPopup(provider);
-            
-            // Store user data
-            const userData = {
-                uid: result.user.uid,
-                email: result.user.email,
-                displayName: result.user.displayName,
-                photoURL: result.user.photoURL
-            };
-            localStorage.setItem('user', JSON.stringify(userData));
-            
-            // Redirect to home
-            window.location.href = 'index.html';
-        } catch (error) {
-            console.error('Sign in error:', error);
-            alert('Sign in failed: ' + error.message);
-        }
+    googleSignInButton.addEventListener('click', () => {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        firebase.auth().signInWithPopup(provider)
+            .then((result) => {
+                // Store user data
+                localStorage.setItem('user', JSON.stringify(result.user));
+                // Redirect to main page
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                console.error('Error during sign in:', error);
+            });
     });
 
-    // Sign Out Handler
-    signOutButton?.addEventListener('click', async function() {
-        try {
-            await auth.signOut();
-            localStorage.removeItem('user');
-            window.location.href = 'auth.html';
-        } catch (error) {
-            console.error('Sign out error:', error);
-            alert('Sign out failed: ' + error.message);
-        }
+    // Sign Out
+    signOutButton.addEventListener('click', () => {
+        firebase.auth().signOut()
+            .then(() => {
+                localStorage.removeItem('user');
+                window.location.href = 'auth.html';
+            })
+            .catch((error) => {
+                console.error('Error during sign out:', error);
+            });
     });
 
-    // Auth State Observer
-    auth.onAuthStateChanged(function(user) {
+    // Auth state changes
+    firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-            if (googleButton) googleButton.style.display = 'none';
-            if (userDetails) userDetails.style.display = 'block';
-            if (userPhoto) userPhoto.src = user.photoURL || '';
-            if (userName) userName.textContent = user.displayName;
-            if (userEmail) userEmail.textContent = user.email;
+            // User is signed in
+            googleSignInButton.style.display = 'none';
+            userDetailsDiv.style.display = 'block';
+            userPhotoImg.src = user.photoURL;
+            userNameP.textContent = user.displayName;
+            userEmailP.textContent = user.email;
         } else {
-            if (googleButton) googleButton.style.display = 'block';
-            if (userDetails) userDetails.style.display = 'none';
+            // User is signed out
+            googleSignInButton.style.display = 'block';
+            userDetailsDiv.style.display = 'none';
         }
     });
 });
