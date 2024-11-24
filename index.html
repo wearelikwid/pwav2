@@ -26,8 +26,15 @@
 <body>
     <div class='container'>
         <header class='app-header'>
-            <h1>El Forma</h1>
-            <p class='app-description'>Create and manage your workouts and programs</p>
+            <div class="header-content">
+                <h1>El Forma</h1>
+                <p class='app-description'>Create and manage your workouts and programs</p>
+                <!-- Add auth status here -->
+                <div id="authStatus" class="auth-status">
+                    <span id="userNameDisplay"></span>
+                    <a href="auth.html" id="authButton" class="button">Sign In</a>
+                </div>
+            </div>
         </header>
 
         <main class='features-grid'>
