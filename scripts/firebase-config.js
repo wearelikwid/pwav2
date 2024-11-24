@@ -11,18 +11,17 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
-const analytics = firebase.analytics();
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Configure Firestore settings for better offline support and multi-tab sync
+// Configure Firestore settings
 db.enablePersistence({
   synchronizeTabs: true
 }).catch((err) => {
   if (err.code == 'failed-precondition') {
     console.warn('Multiple tabs open, persistence enabled in first tab only');
   } else if (err.code == 'unimplemented') {
-    console.warn('Browser doesn\'t support persistence');
+    console.warn('Browser doesn't support persistence');
   }
 });
 
@@ -31,15 +30,6 @@ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   .catch((error) => {
     console.error("Auth persistence error:", error);
   });
-
-// Listen for auth state changes
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    console.log('User is signed in:', user.email);
-  } else {
-    console.log('User is signed out');
-  }
-});
 
 // Export the Firebase services
 window.db = db;
