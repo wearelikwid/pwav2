@@ -1,57 +1,42 @@
 document.addEventListener('DOMContentLoaded', function() {
-    loadPrograms();
+    displayPrograms();
 });
 
-function loadPrograms() {
+function displayPrograms() {
+    const programsList = document.getElementById('programs-list');
     const programs = JSON.parse(localStorage.getItem('programs') || '[]');
-    displayPrograms(programs);
-}
-
-function displayPrograms(programs) {
-    const programList = document.getElementById('program-list');
-    programList.innerHTML = '';
 
     if (programs.length === 0) {
-        programList.innerHTML = `
-            <div class="empty-state">
+        programsList.innerHTML = `
+            <div class="no-programs">
                 <p>No programs created yet.</p>
-                <a href="create-program.html" class="button primary">Create Your First Program</a>
             </div>
         `;
         return;
     }
 
-    programs.forEach(program => {
-        const programCard = createProgramCard(program);
-        programList.appendChild(programCard);
-    });
+    programsList.innerHTML = programs
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .map(program => `
+            <div class="program-card" data-program-id="${program.id}">
+                <div class="program-info">
+                    <h2>${program.name}</h2>
+                    <p>${program.duration} weeks program</p>
+                </div>
+                <div class="program-actions">
+                    <button onclick="editProgram(${program.id})" class="button secondary">Edit</button>
+                    <button onclick="deleteProgram(${program.id})" class="button secondary">Delete</button>
+                </div>
+            </div>
+        `)
+        .join('');
 }
 
-function createProgramCard(program) {
-    const card = document.createElement('div');
-    card.className = 'program-card';
-    
-    const date = new Date(program.createdAt).toLocaleDateString();
-    
-    card.innerHTML = `
-        <div class="program-header">
-            <h2 class="program-title">${program.name}</h2>
-            <span class="program-meta">${date}</span>
-        </div>
-        <div class="program-duration">
-            ${program.duration} ${program.duration === 1 ? 'week' : 'weeks'}
-        </div>
-        <div class="program-actions">
-            <button class="button primary" onclick="viewProgram(${program.id})">View Details</button>
-            <button class="button secondary" onclick="deleteProgram(${program.id})">Delete</button>
-        </div>
-    `;
-    
-    return card;
-}
-
-function viewProgram(programId) {
-    window.location.href = `program-details.html?id=${programId}`;
+function editProgram(programId) {
+    // Store the program ID to edit in localStorage
+    localStorage.setItem('editProgramId', programId);
+    // Redirect to the edit page
+    window.location.href = 'edit-program.html';
 }
 
 function deleteProgram(programId) {
@@ -59,6 +44,6 @@ function deleteProgram(programId) {
         const programs = JSON.parse(localStorage.getItem('programs') || '[]');
         const updatedPrograms = programs.filter(program => program.id !== programId);
         localStorage.setItem('programs', JSON.stringify(updatedPrograms));
-        loadPrograms();
+        displayPrograms();
     }
 }
