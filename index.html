@@ -29,10 +29,17 @@
             <div class="header-content">
                 <h1>El Forma</h1>
                 <p class='app-description'>Create and manage your workouts and programs</p>
-                <!-- Add auth status here -->
                 <div id="authStatus" class="auth-status">
-                    <span id="userNameDisplay"></span>
-                    <a href="auth.html" id="authButton" class="button">Sign In</a>
+                    <div id="userSignedIn" style="display: none;">
+                        <div class="user-info">
+                            <img id="userPhoto" class="user-photo" src="" alt="Profile photo">
+                            <span id="userName"></span>
+                        </div>
+                        <button id="signOutButton" class="button">Sign Out</button>
+                    </div>
+                    <div id="userSignedOut">
+                        <a href="auth.html" class="button">Sign In</a>
+                    </div>
                 </div>
             </div>
         </header>
