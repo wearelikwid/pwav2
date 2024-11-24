@@ -7,19 +7,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
 
-    // Check if we're on the auth page
-    const isAuthPage = window.location.pathname.endsWith('auth.html');
+    // Initialize the FirebaseUI Widget using Firebase
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
 
     // Google Sign In
-    if (googleSignInButton) {
-        googleSignInButton.addEventListener('click', async () => {
-            try {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                // Enable persistence
-                await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-                const result = await firebase.auth().signInWithPopup(provider);
-                
-                // Store user data
+    async function signInWithGoogle() {
+        try {
+            // Set persistence to LOCAL - user will stay signed in after page refresh
+            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+            
+            // Sign in with redirect (recommended for mobile)
+            await firebase.auth().signInWithRedirect(provider);
+        } catch (error) {
+            console.error("Error during sign in:", error);
+            alert("Error signing in: " + error.message);
+        }
+    }
+
+    // Handle redirect result
+    firebase.auth()
+        .getRedirectResult()
+        .then((result) => {
+            if (result.user) {
+                // User successfully signed in
                 const userData = {
                     uid: result.user.uid,
                     email: result.user.email,
@@ -28,25 +40,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('user', JSON.stringify(userData));
                 window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Sign in error:', error);
             }
+        })
+        .catch((error) => {
+            console.error("Error getting redirect result:", error);
         });
-    }
 
     // Sign Out
     const handleSignOut = async () => {
         try {
             await firebase.auth().signOut();
             localStorage.removeItem('user');
-            localStorage.removeItem('workoutProgress'); // Clear any user-specific data
+            localStorage.removeItem('workoutProgress');
             window.location.href = 'index.html';
         } catch (error) {
             console.error('Sign out error:', error);
         }
     };
 
-    // Attach sign out listener to any sign out button
+    // Event Listeners
+    if (googleSignInButton) {
+        googleSignInButton.addEventListener('click', signInWithGoogle);
+    }
+
     if (signOutButton) {
         signOutButton.addEventListener('click', handleSignOut);
     }
@@ -63,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // If on auth page, redirect to index
-            if (isAuthPage) {
+            if (window.location.pathname.endsWith('auth.html')) {
                 window.location.href = 'index.html';
             }
         } else {
