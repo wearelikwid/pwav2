@@ -3,33 +3,44 @@ const auth = firebase.auth();
 
 // UI Elements
 const googleButton = document.getElementById('googleSignIn');
-const signOutButton = document.getElementById('signOut');
-const userDetails = document.getElementById('userDetails');
-const userPhoto = document.getElementById('userPhoto');
-const userName = document.getElementById('userName');
-const userEmail = document.getElementById('userEmail');
+console.log('Found Google button:', googleButton); // Debug log
 
 // Google Sign In
-googleButton.addEventListener('click', function() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithPopup(provider)
-        .catch(error => {
-            console.error('Error signing in:', error);
-            alert('Sign in failed. Please try again.');
-        });
+googleButton.addEventListener('click', async function() {
+    console.log('Google button clicked'); // Debug log
+    
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        console.log('Created provider'); // Debug log
+        
+        // Enable persistence first
+        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        console.log('Set persistence'); // Debug log
+        
+        const result = await auth.signInWithPopup(provider);
+        console.log('Sign in successful:', result.user.email); // Debug log
+    } catch (error) {
+        console.error('Detailed sign in error:', error); // More detailed error
+        alert('Sign in failed: ' + error.message);
+    }
 });
 
 // Sign Out
-signOutButton.addEventListener('click', function() {
-    auth.signOut()
-        .catch(error => {
-            console.error('Error signing out:', error);
-            alert('Sign out failed. Please try again.');
-        });
+signOutButton.addEventListener('click', async function() {
+    console.log('Sign out clicked'); // Debug log
+    try {
+        await auth.signOut();
+        console.log('Sign out successful'); // Debug log
+    } catch (error) {
+        console.error('Sign out error:', error);
+        alert('Sign out failed. Please try again.');
+    }
 });
 
 // Auth State Observer
 auth.onAuthStateChanged(function(user) {
+    console.log('Auth state changed. User:', user ? 'logged in' : 'logged out'); // Debug log
+    
     if (user) {
         // User is signed in
         googleButton.style.display = 'none';
@@ -37,8 +48,8 @@ auth.onAuthStateChanged(function(user) {
         userPhoto.src = user.photoURL;
         userName.textContent = user.displayName;
         userEmail.textContent = user.email;
-        
-        // Redirect to index.html after small delay
+
+        console.log('Redirecting to index.html...'); // Debug log
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 1000);
