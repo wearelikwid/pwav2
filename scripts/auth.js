@@ -2,11 +2,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Get DOM elements
     const googleSignInButton = document.getElementById('googleSignIn');
-    const userSignedInDiv = document.getElementById('userSignedIn');
-    const userSignedOutDiv = document.getElementById('userSignedOut');
+    const userDetailsDiv = document.getElementById('userDetails');
     const userPhotoImg = document.getElementById('userPhoto');
     const userNameP = document.getElementById('userName');
-    const signOutButton = document.getElementById('signOutButton');
+    const signOutButton = document.getElementById('signOut');
 
     // Check if we're on the auth page
     const isAuthPage = window.location.pathname.endsWith('auth.html');
@@ -28,15 +27,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Sign Out
     if (signOutButton) {
-        signOutButton.addEventListener('click', () => {
-            firebase.auth().signOut()
-                .then(() => {
-                    localStorage.removeItem('user');
-                    window.location.href = 'index.html';
-                })
-                .catch((error) => {
-                    console.error('Error during sign out:', error);
-                });
+        signOutButton.addEventListener('click', async () => {
+            try {
+                await firebase.auth().signOut();
+                localStorage.removeItem('user');
+                // Force redirect to index.html after sign out
+                window.location.replace('index.html');
+            } catch (error) {
+                console.error('Error during sign out:', error);
+            }
         });
     }
 
@@ -44,8 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             // User is signed in
-            if (userSignedInDiv) userSignedInDiv.style.display = 'flex';
-            if (userSignedOutDiv) userSignedOutDiv.style.display = 'none';
+            if (userDetailsDiv) userDetailsDiv.style.display = 'block';
             if (userPhotoImg) userPhotoImg.src = user.photoURL;
             if (userNameP) userNameP.textContent = user.displayName;
 
@@ -55,11 +53,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } else {
             // User is signed out
-            if (userSignedInDiv) userSignedInDiv.style.display = 'none';
-            if (userSignedOutDiv) userSignedOutDiv.style.display = 'flex';
+            if (userDetailsDiv) userDetailsDiv.style.display = 'none';
             
             // Don't redirect to auth page unless trying to access protected pages
-            // Add your protected page paths here
             const protectedPages = ['workouts.html', 'create-workout.html', 'programs.html'];
             const currentPage = window.location.pathname.split('/').pop();
             if (protectedPages.includes(currentPage)) {
