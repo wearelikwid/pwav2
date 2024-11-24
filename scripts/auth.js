@@ -5,13 +5,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const userDetailsDiv = document.getElementById('userDetails');
     const userPhotoImg = document.getElementById('userPhoto');
     const userNameP = document.getElementById('userName');
+    const userEmailP = document.getElementById('userEmail');
     const signOutButton = document.getElementById('signOut');
+    const signOutBtn = document.getElementById('signOutBtn');
+    
+    // Elements specific to index page
+    const userSignedIn = document.getElementById('userSignedIn');
+    const userSignedOut = document.getElementById('userSignedOut');
+    const userNameDisplay = document.getElementById('userNameDisplay');
 
     // Check if we're on the auth page
     const isAuthPage = window.location.pathname.endsWith('auth.html');
     
     // Google Sign In
-    if (isAuthPage && googleSignInButton) {
+    if (googleSignInButton) {
         googleSignInButton.addEventListener('click', () => {
             const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithPopup(provider)
@@ -25,19 +32,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Sign Out
-    if (signOutButton) {
-        signOutButton.addEventListener('click', async () => {
-            try {
-                await firebase.auth().signOut();
-                localStorage.removeItem('user');
-                // Force redirect to index.html after sign out
-                window.location.replace('index.html');
-            } catch (error) {
-                console.error('Error during sign out:', error);
-            }
-        });
-    }
+    // Sign Out Function
+    const handleSignOut = async () => {
+        try {
+            await firebase.auth().signOut();
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';  // Changed from replace to href
+        } catch (error) {
+            console.error('Error during sign out:', error);
+        }
+    };
+
+    // Attach sign out event listeners
+    if (signOutButton) signOutButton.addEventListener('click', handleSignOut);
+    if (signOutBtn) signOutBtn.addEventListener('click', handleSignOut);
 
     // Auth state changes
     firebase.auth().onAuthStateChanged((user) => {
@@ -46,6 +54,14 @@ document.addEventListener('DOMContentLoaded', function() {
             if (userDetailsDiv) userDetailsDiv.style.display = 'block';
             if (userPhotoImg) userPhotoImg.src = user.photoURL;
             if (userNameP) userNameP.textContent = user.displayName;
+            if (userEmailP) userEmailP.textContent = user.email;
+
+            // Index page specific elements
+            if (userSignedIn) {
+                userSignedIn.style.display = 'flex';
+                if (userNameDisplay) userNameDisplay.textContent = user.displayName;
+            }
+            if (userSignedOut) userSignedOut.style.display = 'none';
 
             // Only redirect if on auth page
             if (isAuthPage) {
@@ -55,7 +71,16 @@ document.addEventListener('DOMContentLoaded', function() {
             // User is signed out
             if (userDetailsDiv) userDetailsDiv.style.display = 'none';
             
-            // Don't redirect to auth page unless trying to access protected pages
+            // Index page specific elements
+            if (userSignedIn) userSignedIn.style.display = 'none';
+            if (userSignedOut) userSignedOut.style.display = 'flex';
+            
+            // If on auth page and signed out, redirect to index
+            if (isAuthPage) {
+                window.location.href = 'index.html';
+            }
+            
+            // Only redirect to auth for protected pages
             const protectedPages = ['workouts.html', 'create-workout.html', 'programs.html'];
             const currentPage = window.location.pathname.split('/').pop();
             if (protectedPages.includes(currentPage)) {
