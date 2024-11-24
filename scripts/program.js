@@ -7,11 +7,7 @@ function displayPrograms() {
     const programs = JSON.parse(localStorage.getItem('programs') || '[]');
 
     if (programs.length === 0) {
-        programsList.innerHTML = `
-            <div class="no-programs">
-                <p>No programs created yet.</p>
-            </div>
-        `;
+        programsList.innerHTML = '<p class="no-programs">No programs created yet.</p>';
         return;
     }
 
@@ -21,7 +17,7 @@ function displayPrograms() {
             <div class="program-card" data-program-id="${program.id}">
                 <div class="program-info">
                     <h2>${program.name}</h2>
-                    <p>${program.duration} weeks program</p>
+                    <p>${program.duration} weeks</p>
                 </div>
                 <div class="program-actions">
                     <button onclick="editProgram(${program.id})" class="button secondary">Edit</button>
@@ -32,13 +28,6 @@ function displayPrograms() {
         .join('');
 }
 
-function editProgram(programId) {
-    // Store the program ID to edit in localStorage
-    localStorage.setItem('editProgramId', programId);
-    // Redirect to the edit page
-    window.location.href = 'edit-program.html';
-}
-
 function deleteProgram(programId) {
     if (confirm('Are you sure you want to delete this program?')) {
         const programs = JSON.parse(localStorage.getItem('programs') || '[]');
@@ -46,4 +35,11 @@ function deleteProgram(programId) {
         localStorage.setItem('programs', JSON.stringify(updatedPrograms));
         displayPrograms();
     }
+}
+
+function editProgram(programId) {
+    // Store the program ID to edit in localStorage
+    localStorage.setItem('editProgramId', programId);
+    // Redirect to the edit page
+    window.location.href = 'edit-program.html';
 }
