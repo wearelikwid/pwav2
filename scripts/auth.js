@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Wait for Firebase to initialize
+    while (!window.firebase || !firebase.app()) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
     // Get DOM elements - auth page elements
     const googleSignInButton = document.getElementById('googleSignIn');
     const userDetailsDiv = document.getElementById('userDetails');
