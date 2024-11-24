@@ -45,12 +45,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Force a clean redirect to index.html
             console.log('Signing out, redirecting to index.html');
             setTimeout(() => {
-                window.location.replace('/index.html');
+                window.location.replace('index.html');
             }, 100);
         } catch (error) {
             console.error('Sign out error:', error);
             // Force redirect even if there's an error
-            window.location.replace('/index.html');
+            window.location.replace('index.html');
         }
     }
 
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // If we're not on the index page, redirect
             if (!window.location.pathname.includes('index.html')) {
-                window.location.replace('/index.html');
+                window.location.replace('index.html');
             }
         }
     });
